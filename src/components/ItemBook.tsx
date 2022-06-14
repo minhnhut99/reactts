@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Card from "@mui/material/Card";
-import moment from "moment";
-import { useBookQuery } from "../api/books";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { Button, CardActionArea } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
+import moment from "moment";
+import { Link } from "react-router-dom";
+import { useBookQuery } from "../api/books";
 
 const ItemBook = () => {
+  const [id, setId] = useState<string>("");
+  console.log("id", id);
   const { isLoading, isSuccess, data, status } = useBookQuery();
   if (isLoading)
     return (
@@ -78,7 +83,7 @@ const ItemBook = () => {
                     size="small"
                     style={{ marginRight: "10px", padding: "5px" }}
                   >
-                    <Link to="edit">
+                    <Link to={"edit/" + item.id}>
                       <EditIcon
                         style={{
                           color: "white",

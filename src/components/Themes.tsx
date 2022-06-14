@@ -1,5 +1,4 @@
-import { styled, Button } from "@mui/material";
-
+import { styled } from "@mui/material";
 interface SpacerProps {
   axis?: "horizontal" | "vertical";
   size: number;

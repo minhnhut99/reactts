@@ -12,7 +12,7 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Header />}></Route>
-          <Route path="edit" element={<EditForm />}></Route>
+          <Route path="edit/:id" element={<EditForm />}></Route>
         </Routes>
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
