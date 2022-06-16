@@ -18,5 +18,5 @@ export interface PutBook {
   avatar: string;
   author: string;
   desc: string;
-  createAt: string;
+  createdAt: string;
 }

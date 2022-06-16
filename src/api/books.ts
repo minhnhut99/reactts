@@ -1,4 +1,9 @@
-import { useMutation, useQuery } from "react-query";
+import {
+  QueryClient,
+  useQueryClient,
+  useMutation,
+  useQuery,
+} from "react-query";
 import { QueryKey } from "../constants/appConstants";
 import instance from "../lib/axios/axios";
 import { useHttp } from "../lib/http/useHttp";
@@ -26,7 +31,7 @@ export const useBookQueryById = (id: string | undefined) => {
   const { http, handleError } = useHttp();
   // const { currentApplicationId, setCurrentApplicationId } = useApplicationState();
   return useQuery(
-    QueryKey.bookItem,
+    QueryKey.bookItemId,
     async () => {
       const res = await instance.get<null, BookId>(
         "http://629dbe953dda090f3c099c36.mockapi.io/api/v0/books/" + id
@@ -52,6 +57,24 @@ export const usePutBookQuery = (id: string | undefined) => {
     },
     {
       onSuccess: (data) => {},
+    }
+  );
+};
+
+export const useDeleteBookQuery = () => {
+  const { http, handleError } = useHttp();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (id: string) => {
+      const res = await instance.delete<null, BookId>(
+        "http://629dbe953dda090f3c099c36.mockapi.io/api/v0/books/" + id
+      );
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(QueryKey.bookItem, { exact: true });
+      },
     }
   );
 };

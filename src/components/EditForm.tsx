@@ -1,28 +1,51 @@
 import {
   Box,
+  Button,
   ButtonGroup,
   TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useBookQueryById } from "../api/books";
+import { usePutBookQuery } from "../api/books";
 import GlobalButton from "../share/buttons/GlobalButton";
 import { Spacer } from "./Themes";
+import { editForm } from "../constants/formConstant";
 import { useForm, SubmitHandler } from "react-hook-form";
 interface EditFormInput {
   name: string;
-  createdAt: string;
+  avatar: string;
   author: string;
   desc: string;
-  avatar: string;
+  createdAt: string;
 }
 const EditForm = () => {
   const param = useParams();
-  const { register, handleSubmit } = useForm<EditFormInput>();
-  const { isLoading, isSuccess, data, status } = useBookQueryById(param.id);
+  const navigate = useNavigate();
+  const putBookQuery = usePutBookQuery(param.id);
+  const editForm: SubmitHandler<EditFormInput> = (data) => {
+    const { name, avatar, author, desc, createdAt } = data;
+    putBookQuery.mutate({ name, avatar, author, desc, createdAt });
+  };
+  const { isLoading, isSuccess, data } = useBookQueryById(param.id);
+  const { register, handleSubmit, setValue } = useForm<EditFormInput>({});
+  useEffect(() => {
+    if (data) {
+      setValue("name", data.name);
+      setValue("avatar", data.avatar);
+      setValue("author", data.author);
+      setValue("desc", data.desc);
+      setValue("createdAt", moment(data.createdAt).format("llll"));
+    }
+  }, [data]);
+
+  if (putBookQuery.isSuccess) {
+    navigate("/");
+  }
   return (
     <>
       {!isLoading ? (
@@ -52,33 +75,34 @@ const EditForm = () => {
           >
             <Spacer size={40} />
             <TextField
-              id="standard-basic"
+              {...register("name")}
+              id="name"
               label="Name"
               variant="standard"
               name="name"
               fullWidth
-              value={data?.name}
             />
             <Spacer size={40} />
             <TextField
+              {...register("avatar")}
               id="standard-basic"
               label="Avatar"
               variant="standard"
               name="avatar"
-              value={data?.avatar}
               fullWidth
             />
             <Spacer size={40} />
             <TextField
+              {...register("author")}
               id="standard-basic"
               label="Author"
               variant="standard"
               name="author"
               fullWidth
-              value={data?.author}
             />
             <Spacer size={40} />
             <TextareaAutosize
+              {...register("desc")}
               style={{
                 width: "100%",
                 height: "100px",
@@ -87,21 +111,21 @@ const EditForm = () => {
               }}
               aria-label="empty textarea"
               placeholder="Desc"
-              value={data?.desc}
+              name="desc"
             />
             <Spacer size={40} />
             <TextField
+              {...register("createdAt")}
               id="standard-basic"
               label="Created at"
               variant="standard"
               name="createdAt"
-              value={moment(data?.createdAt).format("lll")}
               fullWidth
             />
             <Spacer size={40} />
             <ButtonGroup sx={{ marginLeft: "auto" }}>
-              <GlobalButton MyBgColor="#FC820F">Cancel</GlobalButton>
-              <GlobalButton MyBgColor="">Save</GlobalButton>
+              <Button>Cancel</Button>
+              <Button onClick={handleSubmit(editForm)}>Save</Button>
             </ButtonGroup>
           </Box>
         </form>

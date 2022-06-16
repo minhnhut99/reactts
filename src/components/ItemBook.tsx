@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import {
@@ -10,13 +9,20 @@ import {
   Typography,
 } from "@mui/material";
 import moment from "moment";
-import { Link } from "react-router-dom";
-import { useBookQuery } from "../api/books";
+import React, { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { isConstructorDeclaration } from "typescript";
+import { useBookQuery, useDeleteBookQuery } from "../api/books";
 
-const ItemBook = () => {
-  const [id, setId] = useState<string>("");
-  console.log("id", id);
-  const { isLoading, isSuccess, data, status } = useBookQuery();
+const ItemBook: React.FC = () => {
+  const param = useParams();
+  const { isLoading, isSuccess, data } = useBookQuery();
+  const deleteBookQuery = useDeleteBookQuery();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Ban chac chan xoa khong?")) deleteBookQuery.mutate(id);
+  };
+
   if (isLoading)
     return (
       <Typography
@@ -28,85 +34,91 @@ const ItemBook = () => {
     );
   return (
     <>
-      {isSuccess &&
-        data?.map((item, idx) => {
-          return (
-            <li
-              style={{ marginRight: "20px", marginBottom: "20px" }}
-              key={item.id}
-            >
-              <Card
-                sx={{
-                  width: 250,
-                  borderRadius: "5",
-                }}
+      {isSuccess
+        ? data.map((item, idx) => {
+            return (
+              <li
+                style={{ marginRight: "20px", marginBottom: "20px" }}
+                key={item.id}
               >
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={item.avatar}
-                    alt="green iguana"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {item.name}
-                    </Typography>
-                    <Typography
-                      fontSize="12px"
-                      variant="body2"
-                      color="text.secondary"
-                    >
-                      {item.desc}
-                    </Typography>
-                  </CardContent>
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <p style={{ marginRight: "15px" }} className="author">
-                      {item.author}
-                    </p>
-                    <p className="created-time">
-                      {moment(item.createdAt).format("lll")}
-                    </p>
-                  </div>
-                </CardActionArea>
-                <div
-                  className="btn-group"
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    padding: "12px",
+                <Card
+                  sx={{
+                    width: 250,
+                    borderRadius: "5",
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    size="small"
-                    style={{ marginRight: "10px", padding: "5px" }}
+                  <CardActionArea>
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image={item.avatar}
+                      alt="green iguana"
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {item.name}
+                      </Typography>
+                      <Typography
+                        fontSize="12px"
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        {item.desc}
+                      </Typography>
+                    </CardContent>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <p style={{ marginRight: "15px" }} className="author">
+                        {item.author}
+                      </p>
+                      <p className="created-time">
+                        {moment(item.createdAt).format("lll")}
+                      </p>
+                    </div>
+                  </CardActionArea>
+                  <div
+                    className="btn-group"
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      padding: "12px",
+                    }}
                   >
-                    <Link to={"edit/" + item.id}>
-                      <EditIcon
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      size="small"
+                      style={{ marginRight: "10px", padding: "5px" }}
+                    >
+                      <Link to={"edit/" + item.id}>
+                        <EditIcon
+                          style={{
+                            color: "white",
+                            fontSize: "20px",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </Link>
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(item.id)}
+                      variant="contained"
+                      color="error"
+                      size="small"
+                    >
+                      <DeleteIcon
                         style={{
                           color: "white",
                           fontSize: "20px",
                           cursor: "pointer",
                         }}
                       />
-                    </Link>
-                  </Button>
-                  <Button variant="contained" color="error" size="small">
-                    <DeleteIcon
-                      style={{
-                        color: "white",
-                        fontSize: "20px",
-                        cursor: "pointer",
-                      }}
-                    />
-                  </Button>
-                </div>
-              </Card>
-            </li>
-          );
-        })}
+                    </Button>
+                  </div>
+                </Card>
+              </li>
+            );
+          })
+        : ""}
     </>
   );
 };

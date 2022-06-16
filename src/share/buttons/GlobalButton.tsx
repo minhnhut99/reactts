@@ -24,8 +24,10 @@ interface Props {
   MyBgColor: string;
 }
 
-export default function GlobalButton({ children, MyBgColor }: Props) {
+export default function GlobalButton({ children, MyBgColor, ...props }: Props) {
   return (
-    <GlobalStyleButton MyBgColor={MyBgColor}>{children}</GlobalStyleButton>
+    <GlobalStyleButton {...props} MyBgColor={MyBgColor}>
+      {children}
+    </GlobalStyleButton>
   );
 }
