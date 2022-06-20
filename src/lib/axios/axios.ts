@@ -1,9 +1,9 @@
-import axios from 'axios';
-import camelcaseKeys from 'camelcase-keys';
+import axios from "axios";
+import camelcaseKeys from "camelcase-keys";
 
 const instance = axios.create();
 
-declare module 'axios' {
+declare module "axios" {
   export interface AxiosRequestConfig {
     timestamp?: number;
   }
